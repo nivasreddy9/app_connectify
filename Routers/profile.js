@@ -38,16 +38,16 @@ try{
 })
 
 
-profile.patch("/profile/edit", userAuth, async (req, res) => {
+profile.post("/profile/edit", userAuth, async (req, res) => {
     const { id, ...data } = req.body;
 
     if (!id) {
-        return res.status(400).send("ID is required");
+        return res.status(400).json({ error: "ID is required" });
     }
 
     // Validate if ID is a valid MongoDB ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).send("Invalid ID format");
+        return res.status(400).json({ error: "Invalid ID format" });
     }
 
     console.log("Received ID:", id);
@@ -57,13 +57,14 @@ profile.patch("/profile/edit", userAuth, async (req, res) => {
         const updated = await Subscriber.findByIdAndUpdate(id, data, { new: true });
 
         if (!updated) {
-            return res.status(404).send("User not found. Check if ID is correct.");
+            return res.status(404).json({ error: "User not found. Check if ID is correct." });
         }
 
-        res.send(updated);
+        // Return data in the structure expected by frontend
+        res.json({ data: updated });
     } catch (err) {
         console.error("Update error:", err);
-        res.status(500).send("Server error. Update failed.");
+        res.status(500).json({ error: "Server error. Update failed." });
     }
 });
 

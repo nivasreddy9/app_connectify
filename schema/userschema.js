@@ -52,6 +52,7 @@ const details = new mongoose.Schema(
       type: String,
       required: true,
       enum: ["Male", "Female", "Other"], 
+      set: (value) => value.charAt(0).toUpperCase() + value.slice(1).toLowerCase(),
     },
     Age: {
       type: Number,
